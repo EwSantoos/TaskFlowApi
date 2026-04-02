@@ -88,3 +88,5 @@ A aplicação implementa autenticação via JWT e controle de acesso baseado em 
 - xUnit
 - Moq
 - Git
+
+<img width="958" height="874" alt="image" src="https://github.com/user-attachments/assets/9f167d8f-8297-4052-b5d5-d8f0ef586310" />
