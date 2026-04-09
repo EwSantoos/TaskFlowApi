@@ -1,4 +1,4 @@
-﻿using TaskFlowApi.Application.Dto.WorkItem;
+﻿using TaskFlowApi.Application.Dto.TaskItem;
 
 namespace TaskFlowApi.Application.Dto.Project
 {

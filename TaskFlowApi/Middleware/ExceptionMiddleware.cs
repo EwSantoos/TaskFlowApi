@@ -29,6 +29,7 @@ namespace TaskFlowApi.Middleware
                                 ErrorTypeEnum.NotFound => 404,
                                 ErrorTypeEnum.Conflict => 409,
                                 ErrorTypeEnum.Forbidden => 403,
+                                ErrorTypeEnum.Unauthorized => 401,
                                 _ => 500
                             };
                         }

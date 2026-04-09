@@ -6,9 +6,8 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.Filters;
 using TaskFlowApi.Application.Interfaces.Auth;
-using TaskFlowApi.Application.Interfaces.Project;
-using TaskFlowApi.Application.Interfaces.User;
-using TaskFlowApi.Application.Interfaces.WorkItem;
+using TaskFlowApi.Application.Interfaces.Repositories;
+using TaskFlowApi.Application.Interfaces.Services;
 using TaskFlowApi.Application.Services;
 using TaskFlowApi.infra.Repository;
 using TaskFlowApi.infra.Security;
@@ -24,8 +23,9 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IPasswordHasher, PasswordHasher>();
+builder.Services.AddScoped<IAuthService, AuthService>();
+builder.Services.AddScoped<ITokenService, TokenService>();
 builder.Services.AddScoped<IUsuarioService, UsuarioService>();
 builder.Services.AddScoped<IProjetoService, ProjetoService>();
 builder.Services.AddScoped<ITarefaService, TarefaService>();
@@ -33,10 +33,10 @@ builder.Services.AddScoped<ITarefaService, TarefaService>();
 
 
 
-builder.Services.AddScoped<IAuthRepository, AuthRepository>();
 builder.Services.AddScoped<IUsuarioRepository, UsuarioRepository>();
 builder.Services.AddScoped<IProjetoRepository, ProjetoRepository>();
 builder.Services.AddScoped<ITarefaRepository, TarefaRepository>();
+
 
 
 builder.Services.AddDbContext<AppDbContext>(options =>
@@ -76,7 +76,15 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJw
     };
 });
 
-
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("Frontend", policy =>
+    {
+        policy.WithOrigins("http://localhost:5173")
+              .AllowAnyHeader()
+              .AllowAnyMethod();
+    });
+});
 
 var app = builder.Build();
 
@@ -88,6 +96,8 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
+app.UseCors("Frontend");
 
 app.UseAuthentication();
 

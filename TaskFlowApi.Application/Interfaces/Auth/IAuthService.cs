@@ -1,10 +1,10 @@
-﻿using TaskFlowApi.Application.Dto.User;
+﻿using TaskFlowApi.Application.Dto.Token;
+using TaskFlowApi.Application.Dto.User;
 
 namespace TaskFlowApi.Application.Interfaces.Auth
 {
     public interface IAuthService
     {
-        Task<UsuarioResponse> CriarUsuarioAsync(UsuarioRequest request);
-        Task<string> LoginAsync(UsuarioLogin login);
+        Task<TokenResponse> TokenAsync(UsuarioLogin login);
     }
 }

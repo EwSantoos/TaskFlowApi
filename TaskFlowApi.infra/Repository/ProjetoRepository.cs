@@ -1,5 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using TaskFlowApi.Application.Interfaces.Project;
+using TaskFlowApi.Application.Interfaces.Repositories;
 using TaskFlowApi.Domain.Entities;
 using TaskFlowApi.Infra.Data;
 
@@ -35,10 +35,10 @@ namespace TaskFlowApi.infra.Repository
             return await _dbContext.Projetos.Include(u => u.UsuarioCriador).AsNoTracking().ToListAsync();
         }
 
-        public async Task<Projeto> ObterPorIdAsync(int id)
+        public async Task<Projeto?> ObterPorIdAsync(int projetoId)
         {
             return await _dbContext.Projetos.Include(u => u.UsuarioCriador).Include(t => t.Tarefas).ThenInclude(t => t.Usuario)
-                .FirstOrDefaultAsync(x => x.Id == id);
+                .FirstOrDefaultAsync(x => x.Id == projetoId);
         }
 
         public async Task RemoverAsync(Projeto projeto)
@@ -49,7 +49,9 @@ namespace TaskFlowApi.infra.Repository
 
         public async Task<bool> ValidarNomeExistenteAsync(string nome)
         {
-            return await _dbContext.Projetos.AnyAsync(p => p.Nome.Trim().ToLower() == nome.Trim().ToLower());
+            var nomeNormalizado = nome.Trim().ToLower();
+
+            return await _dbContext.Projetos.AnyAsync(p => p.Nome.ToLower() == nomeNormalizado);
         }
     }
 }

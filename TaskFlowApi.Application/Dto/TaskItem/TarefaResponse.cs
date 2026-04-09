@@ -1,6 +1,6 @@
 ﻿using TaskFlowApi.Domain.Enum;
 
-namespace TaskFlowApi.Application.Dto.WorkItem
+namespace TaskFlowApi.Application.Dto.TaskItem
 {
     public class TarefaResponse
     {

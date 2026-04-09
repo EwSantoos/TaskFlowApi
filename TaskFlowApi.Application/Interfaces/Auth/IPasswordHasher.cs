@@ -6,6 +6,5 @@ namespace TaskFlowApi.Application.Interfaces.Auth
     {
         void CriarSenhaHash(string senha, out byte[] senhaHash, out byte[] senhaSalt);
         bool ValidarSenhaHash(string senha, byte[] senhaHash, byte[] senhaSalt);
-        string CriarToken(Usuario usuario);
     }
 }

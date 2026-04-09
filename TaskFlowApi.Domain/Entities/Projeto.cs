@@ -15,22 +15,22 @@
         {
             return new Projeto 
             { 
-                Nome = nome, 
-                Descricao = descricao,
+                Nome = nome.Trim(), 
+                Descricao = string.IsNullOrWhiteSpace(descricao) ? null : descricao.Trim(),
                 UsuarioCriadorId = idUser
             };
         }
 
-        public void Atualizar(string nome, string descricao) 
+        public void Atualizar(string? nome, string? descricao) 
         {
-            if (!string.IsNullOrWhiteSpace(nome)) 
+            if (nome is not null) 
             {
-                Nome = nome;
+                Nome = nome.Trim();
             }
 
-            if (!string.IsNullOrWhiteSpace(descricao))
+            if (descricao is not null)
             {
-                Descricao = descricao;
+                Descricao = string.IsNullOrWhiteSpace(descricao) ? null : descricao.Trim();
             }
         }
     }

@@ -1,7 +1,6 @@
-﻿using System.ComponentModel.DataAnnotations;
-using TaskFlowApi.Domain.Enum;
+﻿using TaskFlowApi.Domain.Enum;
 
-namespace TaskFlowApi.Application.Dto.WorkItem
+namespace TaskFlowApi.Application.Dto.TaskItem
 {
     public class TarefaRequest
     {
@@ -9,8 +8,6 @@ namespace TaskFlowApi.Application.Dto.WorkItem
         public string? Descricao { get; set; }
         public StatusTarefaEnum Status { get; set; }
         public DateTime? DataLimite { get; set; }
-
-        [Required(ErrorMessage = "UsuarioId é obrigatório!")]
         public int UsuarioId { get; set; }
         
     }

@@ -1,4 +1,6 @@
-﻿namespace TaskFlowApi.Application.Dto.Project
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace TaskFlowApi.Application.Dto.Project
 {
     public class ProjetoRequest
     {

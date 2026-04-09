@@ -17,31 +17,45 @@ namespace TaskFlowApi.Domain.Entities
         public int UsuarioId { get; private set; }
         public Usuario Usuario { get; private set; }
 
-        public static Tarefa Criar(int projetoId, int usuarioId, string titulo, string? descricao, DateTime? dataLimite)
+        public static Tarefa Criar(int projetoId, int usuarioId, string titulo, StatusTarefaEnum status, string? descricao, DateTime? dataLimite)
         {
             return new Tarefa
             {
                 ProjetoId = projetoId,
                 UsuarioId = usuarioId,
-                Titulo = titulo,
-                Descricao = descricao,
+                Titulo = titulo.Trim(),
+                Descricao = string.IsNullOrWhiteSpace(descricao) ? null : descricao.Trim(),
+                Status = status,
                 DataLimite = dataLimite
 
             };
         }
 
-        public void Atualizar(int usuarioId, string titulo, string? descricao, DateTime? dataLimite)
+        public void Atualizar(int? projetoId, int? usuarioId, string? titulo, string? descricao, StatusTarefaEnum? status, DateTime? dataLimite)
         {
-            UsuarioId = usuarioId;
-
-            if (!string.IsNullOrWhiteSpace(titulo))
+            if (projetoId.HasValue) 
             {
-                Titulo = titulo;
+                ProjetoId = projetoId.Value;
             }
 
-            if (!string.IsNullOrWhiteSpace(descricao))
+            if (usuarioId.HasValue) 
             {
-                Descricao = descricao;
+                UsuarioId = usuarioId.Value;
+            }
+
+            if (status.HasValue) 
+            {
+                Status = status.Value;
+            }
+
+            if (titulo is not null)
+            {
+                Titulo = titulo.Trim();
+            }
+
+            if (descricao is not null)
+            {
+                Descricao = string.IsNullOrWhiteSpace(descricao) ? null : descricao.Trim();
             }
 
             if (dataLimite.HasValue) 

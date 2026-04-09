@@ -1,34 +1,25 @@
-﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
+using TaskFlowApi.Application.Dto.Token;
 using TaskFlowApi.Application.Dto.User;
 using TaskFlowApi.Application.Interfaces.Auth;
 
 namespace TaskFlowApi.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/auth")]
     [ApiController]
     public class AuthController : ControllerBase
     {
         private readonly IAuthService _authService;
 
-        public AuthController(IAuthService authSerice) 
+        public AuthController(IAuthService authService)
         {
-            _authService = authSerice;
+            _authService = authService;
         }
 
-        [HttpPost("Registrar")]
-        [Authorize(Roles = "Administrador")]
-        public async Task<ActionResult<UsuarioResponse>> Criar(UsuarioRequest request) 
+        [HttpPost("token")]
+        public async Task<ActionResult<TokenResponse>> Token(UsuarioLogin login)
         {
-            var response = await _authService.CriarUsuarioAsync(request);
-
-            return Ok(response);
-        } 
-        
-        [HttpPost("Login")]
-        public async Task<ActionResult<string>> Login(UsuarioLogin login) 
-        {
-            var response = await _authService.LoginAsync(login);
+            var response = await _authService.TokenAsync(login);
 
             return Ok(response);
         }
