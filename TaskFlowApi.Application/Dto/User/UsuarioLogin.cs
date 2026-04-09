@@ -1,6 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
-
-namespace TaskFlowApi.Application.Dto.User
+﻿namespace TaskFlowApi.Application.Dto.User
 {
     public class UsuarioLogin
     {

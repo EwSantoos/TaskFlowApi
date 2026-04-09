@@ -1,6 +1,8 @@
 using Moq;
 using Moq.AutoMock;
 using TaskFlowApi.Application.Dto.User;
+using TaskFlowApi.Application.Filters;
+using TaskFlowApi.Application.Interfaces.Auth;
 using TaskFlowApi.Application.Interfaces.Repositories;
 using TaskFlowApi.Application.Services;
 using TaskFlowApi.Domain.Entities;
@@ -9,12 +11,6 @@ using TaskFlowApi.Domain.Exceptions;
 
 namespace TaskFlowApi.Tests
 {
-    using Moq;
-    using Moq.AutoMock;
-    using TaskFlowApi.Application.Filters;
-    using TaskFlowApi.Application.Interfaces.Auth;
-    using Xunit;
-
     public class UsuarioServiceTest
     {
         [Fact]
@@ -120,7 +116,7 @@ namespace TaskFlowApi.Tests
 
             var usuarioLogado = CriarUsuario("Admin", "admin@teste.com", PerfilAcessoEnum.Administrador);
 
-            mocker.GetMock<IUsuarioRepository>().Setup(x => x.ObterPorIdAsync(usuarioLogado.Id))
+            mocker.GetMock<IUsuarioRepository>().Setup(x => x.ObterPorIdAsync(It.IsAny<int>()))
                 .ReturnsAsync(usuarioLogado);
 
             mocker.GetMock<IUsuarioRepository>().Setup(x => x.ObterPorIdAsync(2))
@@ -138,8 +134,8 @@ namespace TaskFlowApi.Tests
             var mocker = CriarMocker();
             var sut = mocker.CreateInstance<UsuarioService>();
 
-            const int usuarioLogadoId = 1;
             const int usuarioAlvoId = 2;
+            const int usuarioLogadoId = 1;
 
             var usuarioLogado = CriarUsuario("Operacional", "operacional@teste.com", PerfilAcessoEnum.Operacional);
 
@@ -156,14 +152,12 @@ namespace TaskFlowApi.Tests
                 Nome = "Novo Nome"
             };
 
-            var ex = await Assert.ThrowsAsync<DomainException>(() =>
-                sut.AtualizarAsync(usuarioAlvoId, usuarioLogadoId, request));
+            var ex = await Assert.ThrowsAsync<DomainException>(() => sut.AtualizarAsync(usuarioAlvoId, usuarioLogadoId, request));
 
             Assert.Equal("Você não tem permissão para alterar este usuário!", ex.Message);
             Assert.Equal(ErrorTypeEnum.Forbidden, ex.Type);
 
-            mocker.GetMock<IUsuarioRepository>()
-                .Verify(x => x.AtualizarAsync(It.IsAny<Usuario>()), Times.Never);
+            mocker.GetMock<IUsuarioRepository>().Verify(x => x.AtualizarAsync(It.IsAny<Usuario>()), Times.Never);
         }
 
         [Fact]
@@ -172,8 +166,8 @@ namespace TaskFlowApi.Tests
             var mocker = CriarMocker();
             var sut = mocker.CreateInstance<UsuarioService>();
 
-            const int usuarioLogadoId = 1;
             const int usuarioAlvoId = 2;
+            const int usuarioLogadoId = 1;
 
             var usuarioLogado = CriarUsuario( "Admin", "admin@teste.com", PerfilAcessoEnum.Administrador);
 
@@ -207,8 +201,8 @@ namespace TaskFlowApi.Tests
             var mocker = CriarMocker();
             var sut = mocker.CreateInstance<UsuarioService>();
 
-            const int usuarioLogadoId = 1;
             const int usuarioAlvoId = 2;
+            const int usuarioLogadoId = 1;
 
             var usuarioLogado = CriarUsuario( "Admin", "admin@teste.com", PerfilAcessoEnum.Administrador);
 
@@ -245,8 +239,8 @@ namespace TaskFlowApi.Tests
             var mocker = CriarMocker();
             var sut = mocker.CreateInstance<UsuarioService>();
 
-            const int usuarioLogadoId = 1;
             const int usuarioAlvoId = 2;
+            const int usuarioLogadoId = 1;
 
             var usuarioLogado = CriarUsuario( "Admin", "admin@teste.com", PerfilAcessoEnum.Administrador);
 

@@ -1,6 +1,4 @@
-﻿using System.Threading.Tasks;
-using TaskFlowApi.Application.Dto.User;
-using TaskFlowApi.Application.Filters;
+﻿using TaskFlowApi.Application.Filters;
 using TaskFlowApi.Domain.Entities;
 
 namespace TaskFlowApi.Application.Interfaces.Repositories

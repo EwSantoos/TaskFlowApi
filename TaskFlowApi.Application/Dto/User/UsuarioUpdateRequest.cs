@@ -1,5 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
-using TaskFlowApi.Domain.Enum;
+﻿using TaskFlowApi.Domain.Enum;
 
 namespace TaskFlowApi.Application.Dto.User
 {
