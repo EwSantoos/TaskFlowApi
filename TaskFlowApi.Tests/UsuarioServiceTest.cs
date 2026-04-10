@@ -28,8 +28,16 @@ namespace TaskFlowApi.Tests
                 ConfirmaSenha = "Senha123"
             };
 
-            mocker.GetMock<IUsuarioRepository>().Setup(x => x.EmailExistente(request.Email))
-                .ReturnsAsync(false);
+            var usuarioLogado = Usuario.Criar(
+                "Admin Logado",
+                "admin@teste.com",
+                PerfilAcessoEnum.Administrador,
+                new byte[] { 1 },
+                new byte[] { 2 });
+
+            mocker.GetMock<IUsuarioRepository>().Setup(x => x.ObterPorIdAsync(1)).ReturnsAsync(usuarioLogado);
+
+            mocker.GetMock<IUsuarioRepository>().Setup(x => x.EmailExistente(request.Email)).ReturnsAsync(false);
 
             byte[] hashGerado = { 1, 2, 3 };
             byte[] saltGerado = { 4, 5, 6 };
@@ -40,7 +48,9 @@ namespace TaskFlowApi.Tests
             mocker.GetMock<IUsuarioRepository>().Setup(x => x.AdicionarAsync(It.IsAny<Usuario>()))
                 .ReturnsAsync((Usuario u) => u);
 
-            var response = await sut.CriarUsuarioAsync(request);
+            var response = await sut.CriarUsuarioAsync(1, request);
+
+            mocker.GetMock<IUsuarioRepository>().Verify(x => x.ObterPorIdAsync(1), Times.Once);
 
             mocker.GetMock<IUsuarioRepository>().Verify(x => x.EmailExistente(request.Email), Times.Once);
 
@@ -68,17 +78,59 @@ namespace TaskFlowApi.Tests
                 ConfirmaSenha = "Senha123"
             };
 
-            mocker.GetMock<IUsuarioRepository>().Setup(x => x.EmailExistente(request.Email))
-                .ReturnsAsync(true);
+            var usuarioLogado = Usuario.Criar(
+                "Admin Logado",
+                "admin@teste.com",
+                PerfilAcessoEnum.Administrador,
+                new byte[] { 1 },
+                new byte[] { 2 });
 
-            var ex = await Assert.ThrowsAsync<DomainException>(() => sut.CriarUsuarioAsync(request));
+            mocker.GetMock<IUsuarioRepository>().Setup(x => x.ObterPorIdAsync(1)).ReturnsAsync(usuarioLogado);
+
+            mocker.GetMock<IUsuarioRepository>().Setup(x => x.EmailExistente(request.Email)).ReturnsAsync(true);
+
+            var ex = await Assert.ThrowsAsync<DomainException>(() => sut.CriarUsuarioAsync(1, request));
 
             Assert.Equal("Já existe um usuário com este e-mail.", ex.Message);
             Assert.Equal(ErrorTypeEnum.Conflict, ex.Type);
 
+            mocker.GetMock<IUsuarioRepository>().Verify(x => x.ObterPorIdAsync(1), Times.Once);
+
+            mocker.GetMock<IUsuarioRepository>().Verify(x => x.EmailExistente(request.Email), Times.Once);
+
             mocker.GetMock<IPasswordHasher>().Verify(x => x.CriarSenhaHash(It.IsAny<string>(), out It.Ref<byte[]>.IsAny, out It.Ref<byte[]>.IsAny), Times.Never);
 
             mocker.GetMock<IUsuarioRepository>().Verify(x => x.AdicionarAsync(It.IsAny<Usuario>()), Times.Never);
+        }
+
+        [Fact]
+        public async Task CriarUsuarioAsync_DeveLancarExcecao_QuandoOperacionalTentarCriarAdmin()
+        {
+            var mocker = CriarMocker();
+            var sut = mocker.CreateInstance<UsuarioService>();
+
+            var request = new UsuarioRequest
+            {
+                Nome = "Novo Admin",
+                Email = "novoadmin@teste.com",
+                Perfil = "Administrador",
+                Senha = "Senha123",
+                ConfirmaSenha = "Senha123"
+            };
+
+            var usuarioLogado = Usuario.Criar(
+                "Operacional Logado",
+                "operacional@teste.com",
+                PerfilAcessoEnum.Operacional,
+                new byte[] { 1 },
+                new byte[] { 2 });
+
+            mocker.GetMock<IUsuarioRepository>().Setup(x => x.ObterPorIdAsync(1)).ReturnsAsync(usuarioLogado);
+
+            var ex = await Assert.ThrowsAsync<DomainException>(() => sut.CriarUsuarioAsync(1, request));
+
+            Assert.Equal("Você não ter permissão para criar usuário admin!", ex.Message);
+            Assert.Equal(ErrorTypeEnum.Forbidden, ex.Type);
         }
 
         [Fact]

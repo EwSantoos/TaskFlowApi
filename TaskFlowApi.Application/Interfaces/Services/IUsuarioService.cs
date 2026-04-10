@@ -5,7 +5,7 @@ namespace TaskFlowApi.Application.Interfaces.Services
 {
     public interface IUsuarioService
     {
-        Task<UsuarioResponse> CriarUsuarioAsync(UsuarioRequest request);
+        Task<UsuarioResponse> CriarUsuarioAsync(int usuarioLogadoId, UsuarioRequest request);
         Task<UsuarioResponse> AtualizarAsync(int idUsuario, int usuarioLogadoId, UsuarioUpdateRequest request);
         Task<UsuarioResponse> ObterPorIdAsync(int idUsuario);
         Task ExcluirAsync(int idUsuario);
