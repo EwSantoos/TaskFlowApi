@@ -21,10 +21,15 @@ namespace TaskFlowApi.Controllers
         }
 
         [HttpPost()]
-        [Authorize(Roles = "Administrador")]
+        [Authorize(Roles = "Administrador, Operacional")]
         public async Task<ActionResult<UsuarioResponse>> Criar(UsuarioRequest request)
         {
-            var response = await _usuarioService.CriarUsuarioAsync(request);
+            if (!int.TryParse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value, out int usuarioLogadoId))
+            {
+                throw new DomainException("Usuário autenticado inválido!", ErrorTypeEnum.Unauthorized);
+            }
+
+            var response = await _usuarioService.CriarUsuarioAsync(usuarioLogadoId, request);
 
             return StatusCode(StatusCodes.Status201Created, response);
         }

@@ -21,16 +21,26 @@ namespace TaskFlowApi.Application.Services
             _passwordHasher = passwordHasher;
         }
 
-        public async Task<UsuarioResponse> CriarUsuarioAsync(UsuarioRequest request)
+        public async Task<UsuarioResponse> CriarUsuarioAsync(int usuarioLogadoId, UsuarioRequest request)
         {
             ValidarDadosCriacaoUsuario(request);
+
+            var usuarioLogado = await _usuarioRepository.ObterPorIdAsync(usuarioLogadoId);
+            if (usuarioLogado is null)
+            {
+                throw new DomainException("Usuário autenticado não encontrado!", ErrorTypeEnum.Unauthorized);
+            }
+
+            var perfil = Enum.Parse<PerfilAcessoEnum>(request.Perfil, true);
+            if (perfil == PerfilAcessoEnum.Administrador && usuarioLogado.Perfil == PerfilAcessoEnum.Operacional) 
+            {
+                throw new DomainException("Você não ter permissão para criar usuário admin!", ErrorTypeEnum.Forbidden);
+            }
 
             if (await _usuarioRepository.EmailExistente(request.Email))
             {
                 throw new DomainException("Já existe um usuário com este e-mail.", ErrorTypeEnum.Conflict);
             }
-
-            var perfil = Enum.Parse<PerfilAcessoEnum>(request.Perfil, true);
 
             _passwordHasher.CriarSenhaHash(request.Senha, out byte[] senhaHash, out byte[] senhaSalt);
 
