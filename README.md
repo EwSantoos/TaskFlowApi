@@ -75,7 +75,7 @@ A aplicação implementa autenticação via **JWT (Json Web Token)** e controle 
 **Operacional**
 - Pode gerenciar projetos e tarefas  
 - Pode editar usuários  
-- Não pode criar novos usuários  
+- Não pode criar usuários admin  
 - Não pode alterar usuários com perfil Administrador  
 
 **Consulta**
