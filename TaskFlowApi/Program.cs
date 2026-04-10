@@ -14,8 +14,6 @@ using TaskFlowApi.Infra.DemoSession;
 using TaskFlowApi.Infra.Security;
 using TaskFlowApi.Infra.Repository.Demo;
 
-
-
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers()
@@ -51,7 +49,6 @@ builder.Services.AddSingleton<IDemoSessionService, DemoSessionStore>();
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddScoped<ICurrentSessionService, CurrentSessionService>();
 
-
 builder.Services.AddScoped<IUsuarioRepository, UsuarioRepositoryDemo>();
 builder.Services.AddScoped<IProjetoRepository, ProjetoRepositoryDemo>();
 builder.Services.AddScoped<ITarefaRepository, TarefaRepositoryDemo>();
@@ -73,15 +70,17 @@ builder.Services.AddCors(options =>
 {
     options.AddPolicy("Frontend", policy =>
     {
-        policy.WithOrigins("http://localhost:5173")
-              .AllowAnyHeader()
-              .AllowAnyMethod();
+        policy.WithOrigins(
+            "http://localhost:5173",
+            "https://taskflow-wheat-kappa.vercel.app"
+        )
+        .AllowAnyHeader()
+        .AllowAnyMethod();
     });
 });
 
 var app = builder.Build();
 
-// Pipeline
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
