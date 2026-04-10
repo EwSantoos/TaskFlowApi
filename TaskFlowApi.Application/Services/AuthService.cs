@@ -1,6 +1,7 @@
 ﻿using TaskFlowApi.Application.Dto.Token;
 using TaskFlowApi.Application.Dto.User;
 using TaskFlowApi.Application.Interfaces.Auth;
+using TaskFlowApi.Application.Interfaces.Demo;
 using TaskFlowApi.Application.Interfaces.Repositories;
 using TaskFlowApi.Domain.Entities;
 using TaskFlowApi.Domain.Enum;
@@ -13,11 +14,13 @@ namespace TaskFlowApi.Application.Services
         private readonly IPasswordHasher _passwordHasher;
         private readonly IUsuarioRepository _usuarioRepository;
         private readonly ITokenService _tokenService;
-        public AuthService(IPasswordHasher passwordHasher, IUsuarioRepository usuarioRepository, ITokenService tokenService) 
+        private readonly IDemoSessionService _demoSessionService;
+        public AuthService(IPasswordHasher passwordHasher, IUsuarioRepository usuarioRepository, ITokenService tokenService, IDemoSessionService demoSessionService) 
         {
             _passwordHasher = passwordHasher;
             _usuarioRepository = usuarioRepository;
             _tokenService = tokenService;
+            _demoSessionService = demoSessionService;
         }
 
         public async Task<TokenResponse> TokenAsync(UsuarioLogin login) 
@@ -49,9 +52,11 @@ namespace TaskFlowApi.Application.Services
                 throw new DomainException("E-mail ou senha inválidos!", ErrorTypeEnum.Validation);
             }
 
+            var sessionId = _demoSessionService.CriarSessao();
+
             return new TokenResponse
             {
-                Token = _tokenService.CriarToken(usuario)
+                Token = _tokenService.CriarToken(usuario, sessionId)
             };
         }
     }

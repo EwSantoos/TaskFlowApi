@@ -1,7 +1,7 @@
 ﻿using System.Security.Cryptography;
 using TaskFlowApi.Application.Interfaces.Auth;
 
-namespace TaskFlowApi.infra.Security
+namespace TaskFlowApi.Infra.Security
 {
     public class PasswordHasher : IPasswordHasher
     {

@@ -5,7 +5,7 @@ using Microsoft.IdentityModel.Tokens;
 using TaskFlowApi.Application.Interfaces.Auth;
 using TaskFlowApi.Domain.Entities;
 
-namespace TaskFlowApi.infra.Security
+namespace TaskFlowApi.Infra.Security
 {
     public class TokenService : ITokenService
     {
@@ -16,14 +16,15 @@ namespace TaskFlowApi.infra.Security
             _config = config;
         }
 
-        public string CriarToken(Usuario usuario)
+        public string CriarToken(Usuario usuario, string sessionId)
         {
             var claims = new List<Claim>
             {
                 new Claim(ClaimTypes.NameIdentifier, usuario.Id.ToString()),
                 new Claim(ClaimTypes.Name, usuario.Nome),
                 new Claim(ClaimTypes.Email, usuario.Email),
-                new Claim(ClaimTypes.Role, usuario.Perfil.ToString())
+                new Claim(ClaimTypes.Role, usuario.Perfil.ToString()),
+                new Claim("sessionId", sessionId)
             };
 
             var key = new SymmetricSecurityKey(System.Text.Encoding.UTF8.GetBytes(_config.GetSection("AppSettings:Token").Value));
@@ -32,7 +33,7 @@ namespace TaskFlowApi.infra.Security
 
             var token = new JwtSecurityToken(
                     claims: claims,
-                    expires: DateTime.UtcNow.AddDays(1),
+                    expires: DateTime.UtcNow.AddHours(1),
                     signingCredentials: cred
                 );
 

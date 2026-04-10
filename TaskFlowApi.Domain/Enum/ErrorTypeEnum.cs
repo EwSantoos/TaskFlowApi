@@ -7,5 +7,6 @@
         Conflict,
         Forbidden,
         Unauthorized,
+        InternalError
     }
 }

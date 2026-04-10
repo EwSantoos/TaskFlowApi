@@ -3,7 +3,7 @@ using TaskFlowApi.Application.Interfaces.Repositories;
 using TaskFlowApi.Domain.Entities;
 using TaskFlowApi.Infra.Data;
 
-namespace TaskFlowApi.infra.Repository
+namespace TaskFlowApi.Infra.Repository
 {
     public class ProjetoRepository : IProjetoRepository
     {

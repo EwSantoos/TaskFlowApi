@@ -1,5 +1,6 @@
 ﻿using TaskFlowApi.Application.Dto.Project;
 using TaskFlowApi.Application.Dto.TaskItem;
+using TaskFlowApi.Application.Filters;
 using TaskFlowApi.Application.Interfaces.Repositories;
 using TaskFlowApi.Application.Interfaces.Services;
 using TaskFlowApi.Domain.Entities;
@@ -12,11 +13,13 @@ namespace TaskFlowApi.Application.Services
     {
         private readonly IProjetoRepository _projetoRepository;
         private readonly IUsuarioRepository _usuarioRepository;
+        private readonly ITarefaRepository _tarefaRepository;
 
-        public ProjetoService(IProjetoRepository projetoRepository, IUsuarioRepository usuarioRepository)
+        public ProjetoService(IProjetoRepository projetoRepository, IUsuarioRepository usuarioRepository, ITarefaRepository tarefaRepository)
         {
             _projetoRepository = projetoRepository;
             _usuarioRepository = usuarioRepository;
+            _tarefaRepository = tarefaRepository;
         }        
 
         public async Task<ProjetoResponse> CriarProjetoAsync(int usuarioLogadoId, ProjetoRequest request)
@@ -89,6 +92,13 @@ namespace TaskFlowApi.Application.Services
                 throw new DomainException("Projeto não encontrado!", ErrorTypeEnum.NotFound);
             }
 
+            var (tarefasProjeto, _) = await _tarefaRepository.ListarAsync(new TarefaFiltro
+            {
+                ProjetoId = projetoId,
+                PageNumber = 1,
+                PageSize = 1000
+            });
+
             return new ProjetoResponse
             {
                 Id = projeto.Id,
@@ -97,7 +107,7 @@ namespace TaskFlowApi.Application.Services
                 UsuarioCriadorId = projeto.UsuarioCriadorId,
                 NomeCriador = projeto.UsuarioCriador.Nome,
                 CriadoEm = projeto.CriadoEm,
-                Tarefas = projeto.Tarefas.Select(t => new TarefaResponse
+                Tarefas = tarefasProjeto.Select(t => new TarefaResponse
                 {
                     Id = t.Id,
                     Titulo = t.Titulo,

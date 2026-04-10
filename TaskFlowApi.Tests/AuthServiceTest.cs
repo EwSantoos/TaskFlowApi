@@ -2,6 +2,7 @@
 using Moq.AutoMock;
 using TaskFlowApi.Application.Dto.User;
 using TaskFlowApi.Application.Interfaces.Auth;
+using TaskFlowApi.Application.Interfaces.Demo;
 using TaskFlowApi.Application.Interfaces.Repositories;
 using TaskFlowApi.Application.Services;
 using TaskFlowApi.Domain.Entities;
@@ -94,7 +95,7 @@ namespace TaskFlowApi.Tests
 
             mocker.GetMock<IPasswordHasher>().Verify(x => x.ValidarSenhaHash(It.IsAny<string>(), It.IsAny<byte[]>(), It.IsAny<byte[]>()), Times.Never);
 
-            mocker.GetMock<ITokenService>().Verify(x => x.CriarToken(It.IsAny<Usuario>()), Times.Never);
+            mocker.GetMock<ITokenService>().Verify(x => x.CriarToken(It.IsAny<Usuario>(), It.IsAny<string>()), Times.Never);
         }
 
         [Fact]
@@ -122,7 +123,7 @@ namespace TaskFlowApi.Tests
             Assert.Equal("E-mail ou senha inválidos!", ex.Message);
             Assert.Equal(ErrorTypeEnum.Validation, ex.Type);
 
-            mocker.GetMock<ITokenService>().Verify(x => x.CriarToken(It.IsAny<Usuario>()), Times.Never);
+            mocker.GetMock<ITokenService>().Verify(x => x.CriarToken(It.IsAny<Usuario>(), It.IsAny<string>()), Times.Never);
         }
 
         [Fact]
@@ -145,7 +146,10 @@ namespace TaskFlowApi.Tests
             mocker.GetMock<IPasswordHasher>().Setup(x => x.ValidarSenhaHash(request.Senha, usuario.PasswordHash, usuario.PasswordSalt))
                 .Returns(true);
 
-            mocker.GetMock<ITokenService>().Setup(x => x.CriarToken(usuario))
+            mocker.GetMock<IDemoSessionService>().Setup(x => x.CriarSessao())
+                .Returns("sessao-fake");
+
+            mocker.GetMock<ITokenService>().Setup(x => x.CriarToken(usuario, "sessao-fake"))
                 .Returns("token-fake");
 
             var response = await sut.TokenAsync(request);
@@ -153,7 +157,7 @@ namespace TaskFlowApi.Tests
             Assert.NotNull(response);
             Assert.Equal("token-fake", response.Token);
 
-            mocker.GetMock<ITokenService>().Verify(x => x.CriarToken(usuario), Times.Once);
+            mocker.GetMock<ITokenService>().Verify(x => x.CriarToken(It.IsAny<Usuario>(), It.IsAny<string>()), Times.Once);
         }
 
         private static Usuario CriarUsuario(string nome, string email, PerfilAcessoEnum perfil)

@@ -2,6 +2,7 @@
 using Moq;
 using Moq.AutoMock;
 using TaskFlowApi.Application.Dto.Project;
+using TaskFlowApi.Application.Filters;
 using TaskFlowApi.Application.Interfaces.Repositories;
 using TaskFlowApi.Application.Services;
 using TaskFlowApi.Domain.Entities;
@@ -240,12 +241,18 @@ namespace TaskFlowApi.Tests
                 "Criar endpoint de listagem",
                 DateTime.UtcNow.AddDays(7));
 
+            DefinirPropriedadePrivada(projeto, "Id", 1);
             DefinirPropriedadePrivada(projeto, "UsuarioCriador", criador);
             DefinirPropriedadePrivada(tarefa, "Usuario", responsavel);
             DefinirPropriedadePrivada(projeto, "Tarefas", new List<Tarefa> { tarefa });
 
             mocker.GetMock<IProjetoRepository>().Setup(x => x.ObterPorIdAsync(1))
                 .ReturnsAsync(projeto);
+
+            mocker.GetMock<ITarefaRepository>().Setup(x => x.ListarAsync(It.Is<TarefaFiltro>(f =>f
+            .ProjetoId == 1 &&f.PageNumber == 1 &&f.PageSize == 1000)))
+                .ReturnsAsync((new List<Tarefa> { tarefa }, 1));
+
 
             var response = await sut.ObterPorIdAsync(1);
 
